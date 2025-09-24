@@ -1,10 +1,21 @@
+.carousel-container {
+  height: 500px;
+}
+
+@include media-breakpoint-down(xl) {
+  .carousel-container {
+    height: auto;
+  }
+}
+
 .custom-checkout-label {
   padding-left: 28px;
   cursor: pointer;
 }
 .custom-checkout-label {
-  &::after, &::before {
-    content: "";
+  &::after,
+  &::before {
+    content: '';
     top: 50%;
     position: absolute;
     border-radius: 50%;
@@ -31,7 +42,7 @@
 .custom-step-line {
   position: absolute;
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     right: -1rem;
     top: 50%;
