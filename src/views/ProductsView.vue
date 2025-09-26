@@ -1,6 +1,28 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+
 import Footer from '@/components/Footer.vue'
 import Navbar from '@/components/Navbar.vue'
+
+import { apiGetAllProducts, apiGetProducts } from '@/api/products'
+
+const currentPage = ref('1')
+const selectedCategory = ref('')
+
+const { data } = apiGetProducts({
+  page: currentPage,
+  category: selectedCategory,
+})
+
+const { data: allProducts } = apiGetAllProducts()
+
+const categories = computed(() => {
+  if (!allProducts.value) return []
+
+  const res = [...new Set(allProducts.value.map((product) => product.category))]
+
+  return res
+})
 </script>
 
 <template>
@@ -54,10 +76,24 @@ import Navbar from '@/components/Navbar.vue'
             >
               <div class="card-body py-0">
                 <ul class="list-unstyled">
-                  <li><a href="#" class="py-2 d-block text-muted">客廳植栽</a></li>
-                  <li><a href="#" class="py-2 d-block text-muted">窗邊植栽</a></li>
-                  <li><a href="#" class="py-2 d-block text-muted">書房植栽</a></li>
-                  <li><a href="#" class="py-2 d-block text-muted">餐桌植栽</a></li>
+                  <li>
+                    <button
+                      @click="selectedCategory = ''"
+                      class="d-block py-2 border-0 bg-transparent text-muted"
+                      type="button"
+                    >
+                      全部
+                    </button>
+                  </li>
+                  <li v-for="category in categories" :key="category">
+                    <button
+                      @click="selectedCategory = category"
+                      class="d-block py-2 border-0 bg-transparent text-muted"
+                      type="button"
+                    >
+                      {{ category }}
+                    </button>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -66,63 +102,31 @@ import Navbar from '@/components/Navbar.vue'
       </div>
       <div class="col-md-8">
         <div class="row">
-          <div class="col-md-6">
+          <div v-for="product in data?.products" :key="product.id" class="col-md-6">
             <div class="card border-0 mb-4 position-relative position-relative">
               <img
                 style="height: 320px"
-                src="https://images.unsplash.com/photo-1616220797246-f01f49dd805d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                :src="product.imageUrl"
                 class="card-img-top object-fit-cover rounded-0"
                 alt="琴葉榕"
               />
-              <a href="#" class="text-dark">
-                <i class="far fa-heart position-absolute" style="right: 16px; top: 16px"></i>
-              </a>
+              <button
+                type="button"
+                class="position-absolute text-dark border-0 bg-transparent"
+                style="right: 16px; top: 16px"
+              >
+                <i class="far fa-heart"></i>
+              </button>
               <div class="card-body p-0">
-                <h4 class="mb-0 mt-3"><a href="./detail.html">琴葉榕（Fiddle Leaf Fig）</a></h4>
+                <h4 class="mb-0 mt-3">
+                  <RouterLink :to="`/products/${product.id}`">{{ product.title }}</RouterLink>
+                </h4>
                 <p class="card-text mb-0">
-                  NT$2,500 <span class="text-muted"><del>NT$2,500</del></span>
+                  NT${{ product.price?.toLocaleString('zh-TW') }}
+                  <span class="text-muted"
+                    ><del>NT${{ product.origin_price?.toLocaleString('zh-TW') }}</del></span
+                  >
                 </p>
-                <p class="text-muted mt-3"></p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card border-0 mb-4 position-relative position-relative">
-              <img
-                style="height: 320px"
-                src="https://images.unsplash.com/photo-1660756723808-d85024a7e5d4?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                class="card-img-top object-fit-cover rounded-0"
-                alt="黃金葛"
-              />
-              <a href="#" class="text-dark">
-                <i class="far fa-heart position-absolute" style="right: 16px; top: 16px"></i>
-              </a>
-              <div class="card-body p-0">
-                <h4 class="mb-0 mt-3"><a href="./detail.html">黃金葛（Golden Pothos）</a></h4>
-                <p class="card-text mb-0">
-                  NT$1,800 <span class="text-muted"><del>NT$1,800</del></span>
-                </p>
-                <p class="text-muted mt-3"></p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card border-0 mb-4 position-relative position-relative">
-              <img
-                style="height: 320px"
-                src="https://images.unsplash.com/photo-1616122236015-b37dc314d875?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                class="card-img-top object-fit-cover rounded-0"
-                alt="..."
-              />
-              <a href="#" class="text-dark">
-                <i class="far fa-heart position-absolute" style="right: 16px; top: 16px"></i>
-              </a>
-              <div class="card-body p-0">
-                <h4 class="mb-0 mt-3"><a href="./detail.html">橡膠樹（Rubber Plant）</a></h4>
-                <p class="card-text mb-0">
-                  NT$2,600 <span class="text-muted"><del>NT$2,600</del></span>
-                </p>
-                <p class="text-muted mt-3"></p>
               </div>
             </div>
           </div>
@@ -130,17 +134,39 @@ import Navbar from '@/components/Navbar.vue'
         <nav class="d-flex justify-content-center">
           <ul class="pagination">
             <li class="page-item">
-              <a class="page-link" href="#" aria-label="Previous">
+              <button
+                :disabled="!data?.pagination?.has_pre"
+                type="button"
+                class="page-link"
+                aria-label="Previous"
+              >
                 <span aria-hidden="true">&laquo;</span>
-              </a>
+              </button>
             </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li
+              v-for="pageNum in data?.pagination?.total_pages"
+              :key="pageNum"
+              class="page-item"
+              :class="{ active: currentPage === pageNum.toString() }"
+            >
+              <button
+                @click="currentPage = pageNum.toString()"
+                :disabled="currentPage === pageNum.toString()"
+                class="page-link"
+                type="button"
+              >
+                {{ pageNum }}
+              </button>
+            </li>
             <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
+              <button
+                :disabled="!data?.pagination?.has_next"
+                class="page-link"
+                type="button"
+                aria-label="Next"
+              >
                 <span aria-hidden="true">&raquo;</span>
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
