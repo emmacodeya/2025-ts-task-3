@@ -135,9 +135,11 @@ const categories = computed(() => {
           <ul class="pagination">
             <li class="page-item">
               <button
+                @click="currentPage = (parseInt(currentPage) - 1).toString()"
                 :disabled="!data?.pagination?.has_pre"
                 type="button"
                 class="page-link"
+                :class="{ disabled: !data?.pagination?.has_pre }"
                 aria-label="Previous"
               >
                 <span aria-hidden="true">&laquo;</span>
@@ -160,8 +162,10 @@ const categories = computed(() => {
             </li>
             <li class="page-item">
               <button
+                @click="currentPage = (parseInt(currentPage) + 1).toString()"
                 :disabled="!data?.pagination?.has_next"
                 class="page-link"
+                :class="{ disabled: !data?.pagination?.has_next }"
                 type="button"
                 aria-label="Next"
               >
